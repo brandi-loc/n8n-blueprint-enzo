@@ -1,4 +1,4 @@
-FROM node:26-bookworm-slim
+FROM node:22-bookworm-slim
 
 USER root
 
@@ -8,6 +8,7 @@ RUN apt-get update && \
     make \
     g++ \
     git \
+    curl \
     ca-certificates \
     tini && \
     rm -rf /var/lib/apt/lists/*
