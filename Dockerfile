@@ -1,11 +1,27 @@
-FROM n8nio/n8n:2.40.5
+FROM node:26-bookworm-slim
 
 USER root
 
-COPY --from=alpine:3.24 /sbin/apk /sbin/apk
-COPY --from=alpine:3.24 /lib/apk /lib/apk
-COPY --from=alpine:3.24 /usr/lib/libapk* /usr/lib/
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    python3 \
+    make \
+    g++ \
+    git \
+    ca-certificates \
+    tini && \
+    rm -rf /var/lib/apt/lists/*
 
-RUN apk add --no-cache python3
+RUN npm install -g n8n@2.40.5
+
+RUN mkdir -p /home/node/.n8n && \
+    chown -R node:node /home/node
 
 USER node
+
+WORKDIR /home/node
+
+EXPOSE 5678
+
+ENTRYPOINT ["tini", "--"]
+CMD ["n8n", "start"]
